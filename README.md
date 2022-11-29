@@ -1,4 +1,4 @@
-# Statistical fine-mapping pipeline in FinnGen
+# Statistical fine-mapping pipeline in FinnGen proteomics QTL
 Fine-mapping pipeline using [FINEMAP](http://finemap.me/) and [SuSiE](https://github.com/stephenslab/susieR).
 
 ## Overview
@@ -21,6 +21,8 @@ Configurable options include:
 - `finemap.sumstats_pattern`: a path to GWAS summary statistics where `{PHENO}` is a magic keyword to be replaced by an actual phenotype name in `finemap.phenolistfile`
 - `finemap.phenolistfile`: a list of phenotypes to fine-map
 - `finemap.phenotypes`: a path to phenotype file. **[IMPORTANT]** The first column should contains sample IDs that match to bgen sample IDs. If a phenotype is binary, we expect it's coded as **0/1/NA**, otherwise quantitative phenotype is automatically assumed.
+- `finemap.mergeScript`: path to a R script to merge the summary statistics and allele frequency.
+- `finemap.freqFile`: path to allele frequency.
 - `finemap.preprocess.rsid_col`: a column name of rsid / variant id. If `finemap.preprocess.set_variant_id` is `true`, this option is disregarded.
 - `finemap.preprocess.chromosome_col`: a column name of chromosome
 - `finemap.preprocess.position_col`: a column name of position

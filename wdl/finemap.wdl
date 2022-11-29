@@ -1,10 +1,38 @@
 import "finemap_sub.wdl" as sub
 
+task mergeSuma {
+    File freqFile
+    File mergeScript
+    String pheno
+    String sumstats_pattern
+    File sumstats = sub(sumstats_pattern,"\\{PHENO\\}",pheno)
+
+
+    command <<<
+        
+        Rscript ${mergeScript} ${sumstats} ${freqFile} "${pheno}.glm.linear"
+
+        gzip ${pheno}.glm.linear
+    >>> 
+
+    runtime {
+        cpu: 2
+        disks: "local-disk 10 SSD"
+        docker: "zhiliz/tools"
+        memory: "8G"
+        zones: "europe-west1-b"
+    }
+
+    output {
+        File suma = pheno + ".glm.linear.gz"
+    }
+
+}
+
 task preprocess {
     String pheno
     File phenofile
-    String sumstats_pattern
-    File sumstats = sub(sumstats_pattern,"\\{PHENO\\}",pheno)
+    File sumstats
     String zones
     String docker
     Int cpu
@@ -31,8 +59,9 @@ task preprocess {
     Float? minimum_pval
     String? set_variant_id_map_chr
 
-    command <<<
+    #String outSummas = pheno + ".glm.linear"
 
+    command <<< 
         catcmd="cat"
         if [[ ${phenofile} == *.gz ]] || [[ ${phenofile} == *.bgz ]]
         then
@@ -149,6 +178,8 @@ workflow finemap {
     String zones
     String docker
     String sumstats_pattern
+    String freqFile 
+    String mergeScript
     File phenolistfile
     File phenotypes
 
@@ -157,9 +188,14 @@ workflow finemap {
 
     scatter (pheno in phenos) {
 
+        call mergeSuma {input: freqFile=freqFile, mergeScript=mergeScript, sumstats_pattern=sumstats_pattern, pheno=pheno}
+
+        File sumstatsFile = mergeSuma.suma
+
+
         call preprocess {
             input: zones=zones, docker=docker, pheno=pheno, phenofile=phenotypes,
-                sumstats_pattern=sumstats_pattern,set_variant_id_map_chr=set_variant_id_map_chr
+                sumstats=sumstatsFile,  set_variant_id_map_chr=set_variant_id_map_chr
         }
 
         if(preprocess.had_results) {
