@@ -228,4 +228,5 @@ Columns:
 - probn posterior inclusion probability of variant into credible set n
 
 ## Authors
+Zhili Zheng adapted the original finemap pipeline to pQTL.
 Masahiro Kanai (mkanai@broadinstitute.org) with significant inputs from Hilary Finucane, Juha Karjalainen, Mitja Kurki, Sina Rüeger, and Jacob Ulirsch.
